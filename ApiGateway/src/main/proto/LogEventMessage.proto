@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package model;
+
+option java_package = "org.mga.ApiGateway.application.domain.model.protobuf";
+// option java_outer_classname = "LogEventProto";
+
+message LogEventMessage {
+
+	string timestamp = 1;
+	string deviceId = 2;
+	string event = 3;
+
+}

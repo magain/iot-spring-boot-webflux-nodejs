@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message LogEventMessage {
+
+    string timestamp = 1;
+    string deviceId = 2;
+    string event = 3;
+
+}
