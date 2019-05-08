@@ -14,7 +14,7 @@ This repository contains the source code of three applications:
 
 ## Environment
 
-The system consisting of the the three applications is build to run a single system because all communication goes to _localhost_.
+The system consisting of the three applications is build to run a single system because all communication goes to _localhost_.
 
 ## Prerequisites
 
