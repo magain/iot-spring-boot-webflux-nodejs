@@ -8,85 +8,102 @@ import java.net.URL;
 import java.util.*;
 import java.sql.Timestamp;
 import java.util.concurrent.TimeUnit;
-
 import org.json.JSONObject;
 
+/*
+    This class represents a device and it does the following things:
+    - waking up after sleeping time has ended
+      (sleeping time generated for each device instances basing on a random value in seconds)
+    - send a message containing a LogEvent as JSON object to the ApiGateway
+    - fall asleep
+ */
 public class Device implements Runnable {
 
     private String deviceId;
     private String dummyEvent;
-    private boolean interrupted = false;
     private int sleepTime;
-    private Map<String, JSONObject> messageOutBox;
-
 
     public Device() {
+        // Defining a unique id for the device
         this.deviceId = UUID.randomUUID().toString();
-        this.dummyEvent = "This is some dummy event from device " + this.deviceId;
-        this.sleepTime = getRandomSleepTime(new Random());
+
+        // Defining some string as event for sending the message
+        this.dummyEvent = "Device " + this.deviceId + " woke up again";
+
+        // Defining the time in seconds the device falls asleep between sending messages
+        this.sleepTime = getRandomDeviceSleepTime(new Random());
     }
 
     @Override
     public void run() {
+        System.out.println("Stating device: " + deviceId);
+        JSONObject logEvent;
 
-        while(!interrupted) {
+        while(true) {   // endless loop
             try {
-                sendLogEvent();
+                logEvent = createLogEventJson();
+                sendLogEventMessage(logEvent);
                 TimeUnit.SECONDS.sleep(this.sleepTime);
             } catch(InterruptedException ie) {
-                System.out.println("Device: " + deviceId + " has been interrupted");
+                System.out.println("Device: " + this.deviceId + " has been interrupted");
                 System.out.println(ie.getMessage());
-                interrupted = true;
             }
         }
     }
 
-    private void sendLogEvent() {
+    /*
+        Sending a message as HTTP POST request to the ApiGateway including a JSON object representing a log event
+     */
+    private void sendLogEventMessage(JSONObject logEvent) {
+
         try {
+            // Create HTTP the connection and configure it
             URL url = new URL("http://localhost:8080/api/logEvent");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestMethod("POST");
+            con.setConnectTimeout(500);
 
+            // send the POST request including its payload
             OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
-            wr.write(prepareMspJson().toString());
+            wr.write(logEvent.toString());
             wr.flush();
 
-            int httpCode = con.getResponseCode();
-
-            if(httpCode != 200) {
-                System.out.print("Sending request failed with http Code: " + httpCode);
+            // Analyze response
+            if(con.getResponseCode() != 200) {
+                System.out.println("Device: " + this.deviceId + " - Sending request failed with http Code: " + con.getResponseCode());
             }
 
         } catch(ProtocolException pe) {
+            System.out.println("Device: " + this.deviceId + " - Sending request failed - ProtocolException");
             System.out.println(pe.getMessage());
-            interrupted = true;
         } catch (IOException ioe) {
+            System.out.println("Device: " + this.deviceId + " - Sending request failed - IOException");
             System.out.println(ioe.getMessage());
-            interrupted = true;
         }
     }
 
-    private JSONObject prepareMspJson() {
+    private JSONObject createLogEventJson() {
         Date date = new Date();
 
         JSONObject msg = new JSONObject();
         msg.put("deviceId", deviceId);
         msg.put("event", dummyEvent);
-        msg.put("timestamp", getTimestamp());
+        msg.put("timestamp", getCurrentTimestamp());
 
         return msg;
     }
 
-    private Timestamp getTimestamp() {
+    private Timestamp getCurrentTimestamp() {
         Date date = new Date();
         long time = date.getTime();
 
         return new Timestamp(time);
     }
 
-    private int getRandomSleepTime(Random random) {
+    private int getRandomDeviceSleepTime(Random random) {
+
         return random.nextInt(30 - 5 + 1) + 5;
     }
 }
