@@ -24,4 +24,6 @@ var logger = winston.createLogger({
         })
     ]
 });
+
+// export the winston logger
 module.exports = logger;
