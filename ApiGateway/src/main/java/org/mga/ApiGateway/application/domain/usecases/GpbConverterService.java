@@ -9,6 +9,8 @@ public class GpbConverterService {
 
     public LogEventMessage convertLogEventToGpb(LogEvent logEvent) {
 
+        // Build the LogEventMessage (calss has been generated using protobuf-java)
+        // and return it
         return LogEventMessage.newBuilder()
                               .setEvent(logEvent.getEvent())
                               .setDeviceId(logEvent.getDeviceId())

@@ -30,8 +30,11 @@ public class LoggerServiceUdpClientAdapter implements LoggerServicePort {
         }
     }
 
+    // Sends out the binary representation for logEventMessage (Google Protocol Buffer)
+    // The possible IOException is not catched here and will be passed all the way back
+    // to the RestController
     public Mono<Void> sendMessage(LogEventMessage logEventMessage) throws IOException {
-        byte[] sendBuffer = logEventMessage.toByteArray();
+        byte[] sendBuffer = logEventMessage.toByteArray();  // this is doing the trick
         byte[] receiveBuffer = new byte[1000];
         DatagramPacket sendDatagramPacket = prepareDatagramPacket(sendBuffer);
         socket.setSoTimeout(500);
@@ -39,7 +42,7 @@ public class LoggerServiceUdpClientAdapter implements LoggerServicePort {
         DatagramPacket receivedDatagramPacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
         socket.receive(receivedDatagramPacket);
 
-        return Mono.empty();
+        return Mono.empty();    // Everything is good. So put an empty Mono onto the chain back to the RestController
     }
 
     private DatagramPacket prepareDatagramPacket(byte[] buffer) {

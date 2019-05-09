@@ -10,12 +10,15 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
+/*
+    The connecting element between the presentation adapter and infrastructure adapter
+ */
+
 @Service
 public class LogDispatcherService implements SensorDeviceApiPort {
 
     @Autowired
     private LoggerServicePort loggerServicePort;
-    //private LoggerServiceUdpClientAdapter loggerServiceUdpClientAdapter;
 
     @Autowired
     private final GpbConverterService gpbConverterService;
@@ -27,6 +30,8 @@ public class LogDispatcherService implements SensorDeviceApiPort {
     }
 
 
+    // Pass on the the received request payload on to the outgoing infratstructure adapter after converting it to GPB
+    // Possible IOException will be handled inderectly by the ControllerAdvice
     public Mono<Void> dispatchLogEvent(LogEvent logEvent) throws IOException {
         return loggerServicePort.sendMessage(gpbConverterService.convertLogEventToGpb(logEvent));
     }

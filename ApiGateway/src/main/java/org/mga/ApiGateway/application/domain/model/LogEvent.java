@@ -1,7 +1,11 @@
 package org.mga.ApiGateway.application.domain.model;
 
+/*
+    Java Pojo defining the LogEvent.
+ */
 public class LogEvent {
 
+    // The class could be simplified using lombok
     private String deviceId;
     private String event;
     private String timestamp;
@@ -13,6 +17,8 @@ public class LogEvent {
         this.event = logEvent.event;
         this.timestamp = logEvent.timestamp;
     }
+
+    // Getters and Setters
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
