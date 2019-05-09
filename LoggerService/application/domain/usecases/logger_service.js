@@ -1,7 +1,7 @@
 /*
     Import Infrastructure Adapter
  */
-var logger = require('../../../infrastructure/logger');
+var logger = require('../../../infrastructure/logger_adapter');
 /*
     Exported Functions
  */

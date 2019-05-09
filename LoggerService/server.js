@@ -6,7 +6,7 @@ var dgram                 = require('dgram');
     Include my modules
  */
 var udp_controller_adapter  = require('./presentation/udp_controller_adapter.js')
-//var logger_adapter          = require('./infrastructure/logger.js')
+//var logger_adapter          = require('./infrastructure/logger_adapter.js')
 /*
     Spin up the UDP Server
  */
