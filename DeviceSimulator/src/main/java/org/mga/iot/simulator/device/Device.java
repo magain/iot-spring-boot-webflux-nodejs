@@ -72,18 +72,24 @@ public class Device implements Runnable {
 
             // Analyze response
             if(con.getResponseCode() != 200) {
+                // Something went wrong - check if ApiGateway and LoggerService are up and running
                 System.out.println("Device: " + this.deviceId + " - Sending request failed with http Code: " + con.getResponseCode());
             }
 
         } catch(ProtocolException pe) {
-            System.out.println("Device: " + this.deviceId + " - Sending request failed - ProtocolException");
+            // Something went wrong - check if ApiGateway and LoggerService are up and running
+            System.out.println("Device: " + this.deviceId + " - Sending request failed");
             System.out.println(pe.getMessage());
         } catch (IOException ioe) {
-            System.out.println("Device: " + this.deviceId + " - Sending request failed - IOException");
+            // Something went wrong - check if ApiGateway and LoggerService are up and running
+            System.out.println("Device: " + this.deviceId + " - Sending request failed");
             System.out.println(ioe.getMessage());
         }
     }
 
+    /*
+        Creates the message payload as JSONObject
+     */
     private JSONObject createLogEventJson() {
         Date date = new Date();
 
@@ -95,6 +101,9 @@ public class Device implements Runnable {
         return msg;
     }
 
+    /*
+        Generates the current timestamp to put into the message payload object
+     */
     private Timestamp getCurrentTimestamp() {
         Date date = new Date();
         long time = date.getTime();
@@ -102,6 +111,9 @@ public class Device implements Runnable {
         return new Timestamp(time);
     }
 
+    /*
+        Generates a random int value used as device/thread sleeping time
+     */
     private int getRandomDeviceSleepTime(Random random) {
 
         return random.nextInt(30 - 5 + 1) + 5;
